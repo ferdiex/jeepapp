@@ -23,7 +23,7 @@ def load_data():
         "hora": "08:30 AM",
         "punto": "Estacionamiento Costo Xalapa",
         "maps_url": "https://maps.app.goo.gl/dHnpQLPMh7CBDEcG9",
-        "qr_app": "https://ruta-crateres-4x4.streamlit.app",
+        "qr_app": "https://jeepapp.streamlit.app/",
         "qr_whats": "https://chat.whatsapp.com/",
         "requisitos": "🪢 Eslingas (2)\n🧲 Grilletes 3/4\n📻 Radio Baofeng (159.100 MHz) / Talkabout Ch4",
         "full_black": False,
@@ -434,7 +434,7 @@ st.divider()
 # --- QR APP ---
 st.subheader("📲 INVITACIÓN APP")
 # Aquí le pasamos la variable real de la base de datos
-url_app = st.session_state.db.get("qr_app", "https://jeepapp.streamlit.app/")
+url_app = st.session_state.db.get("qr_app", "")
 qr_app_img = qrcode.make(url_app) 
 
 buf1 = BytesIO()
@@ -445,7 +445,7 @@ st.divider()
 # --- QR WHATSAPP ---
 st.subheader("🟢💬 INVITACIÓN GRUPO WHATSAPP")
 # Aquí le pasamos la variable real del link de WhatsApp
-url_ws = st.session_state.db.get("qr_whats", "https://chat.whatsapp.com/")
+url_ws = st.session_state.db.get("qr_whats", "")
 qr_ws_img = qrcode.make(url_ws)
 
 buf2 = BytesIO()
