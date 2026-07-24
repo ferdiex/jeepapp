@@ -3,7 +3,7 @@
 Aplicación diseñada para la gestión y logística de rutas off-road. Optimizado para expediciones tipo **Suzuki Jimny** y entusiastas del 4x4.
 
 ## 📱 Vista Previa
-![Login App](assets/app.png)
+![Login App](assets/app.png)<br>
 *Pantalla de acceso con sistema de código de seguridad de 4 dígitos.*
 
 ## 🚀 Características
