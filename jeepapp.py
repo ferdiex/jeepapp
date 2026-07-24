@@ -8,8 +8,6 @@ from PIL import Image
 
 # --- CONFIGURACIÓN DE DATOS ---
 DATA_FILE = "ruta_pro_data.json"
-INVITE_CODE = "4X4X"
-ADMIN_PASS = "Ad26"
 
 def load_data():
     if os.path.exists(DATA_FILE):
@@ -19,6 +17,8 @@ def load_data():
         except: pass
     return {
         "titulo": "🏜️ ÚNETE A LA RUTA 4X4",
+        "invite_code": st.secrets.get("INVITE_CODE", "0000"),
+        "admin_pass": st.secrets.get("ADMIN_PASS", "1234"),
         "fecha": "Domingo, 1 de Agosto 2026",
         "hora": "08:30 AM",
         "punto": "Estacionamiento Costo Xalapa",
@@ -105,14 +105,13 @@ def apply_css_styles():
         background-color: rgba(26, 26, 26, 0.5) !important;
     }}
     
-    /* Forzamos que el botón interno de "Browse files" sea naranja 
-       porque a veces el TOML se pone necio */
+    /* Forzamos que el botón interno de "Browse files" sea naranja  */
     [data-testid="stFileUploadDropzone"] button {{
         background-color: #ff6600 !important;
         color: white !important;
     }}
 
-    /* TEXTO BLANCO PURO (Para máxima legibilidad en el cerro) */
+    /* TEXTO BLANCO PURO (Para máxima legibilidad) */
     h1, h2, h3, h4, h5, h6, p, label, span, li, div, .stMarkdown {{
         color: #ffffff !important;
     }}
@@ -136,7 +135,7 @@ def apply_login_styles():
         padding: 20px;
     }
     
-    /* EL TRUCO: Estilizar el input para que parezca 4 cuadros */
+    /* Estilizar el input para que parezca 4 cuadros */
     div[data-testid="stTextInput"] input {
         background-color: transparent !important;
         color: #ff6600 !important;
@@ -223,19 +222,20 @@ if not st.session_state.logged_in:
     
     _, col, _ = st.columns([1,2,1])
     with col:
-        st.write("# ")
-        st.write("# ")
-        # Título dinámico también en el login
         st.title(st.session_state.db.get("titulo", "🚜 RUTA 4X4"))
-        st.write("---")
-        
         pw = st.text_input("CÓDIGO DE ACCESO", type="password", max_chars=4).upper()
         
-        st.write("# ")
         if st.button("ACCEDER A LA RUTA"):
-            if pw in [INVITE_CODE.upper(), ADMIN_PASS.upper()]:
+            inv_code = st.session_state.db.get("invite_code", "").upper()
+            adm_code = st.session_state.db.get("admin_pass", "").upper()
+            
+            if pw == inv_code:
                 st.session_state.logged_in = True
-                st.session_state.is_admin = (pw == ADMIN_PASS.upper())
+                st.session_state.is_admin = False
+                st.rerun()
+            elif pw == adm_code:
+                st.session_state.logged_in = True
+                st.session_state.is_admin = True
                 st.rerun()
             else:
                 st.error("CÓDIGO INCORRECTO")
@@ -251,8 +251,32 @@ with st.sidebar:
     # SECCIÓN ADMIN
     if st.session_state.get("is_admin"):
         st.subheader("🛠 Configuración Admin")
+
+        st.write("---") 
+
+        st.subheader("🔑 Seguridad y Códigos")
         
-        # Parche: Editar nombre de la ruta
+        # 1. Capturamos lo que escribes en variables temporales
+        nuevo_inv = st.text_input("Código Invitado (4 dígitos)", 
+                    value=st.session_state.db.get("invite_code", ""), max_chars=4).upper()
+        
+        nuevo_adm = st.text_input("Código Admin (4 dígitos)", 
+                    value=st.session_state.db.get("admin_pass", ""), max_chars=4).upper()
+        
+        # 2. El Parche Quirúrgico: Validación de "Diferencial"
+        if nuevo_inv == nuevo_adm:
+            st.error("⚠️ ¡ALERTA! Los códigos NO pueden ser iguales o perderás el acceso Admin.")
+        else:
+            # Solo si son diferentes dejamos que aparezca el botón de guardar
+            if st.button("💾 Guardar Nueva Seguridad"):
+                st.session_state.db["invite_code"] = nuevo_inv
+                st.session_state.db["admin_pass"] = nuevo_adm
+                save_data(st.session_state.db)
+                st.success("¡Códigos actualizados y blindados!")
+
+        st.write("---") 
+
+        # Editar nombre de la ruta
         st.session_state.db["titulo"] = st.text_input("Nombre de la Travesía", value=st.session_state.db.get("titulo", ""))
         
         if st.button("💾 Guardar Nombre y Textos"):
@@ -262,7 +286,7 @@ with st.sidebar:
             
         st.write("---")
         
-        # Parche: Gestión de fondo
+        # Gestión de fondo
         bg = st.file_uploader("Cambiar Imagen de Fondo", type=["jpg", "png"], key="bg_admin")
         if bg:
             st.session_state.db["fondo_b64"] = process_image(bg.getvalue(), (1280, 720))
@@ -285,7 +309,7 @@ with st.sidebar:
         if st.button("💾 Guardar Estilo"):
             save_data(st.session_state.db)
             st.rerun()
-        
+      
         st.write("---")
         if st.button("🚨 RESET TOTAL (LISTA Y FOTOS)"):
             st.session_state.db["participantes"] = []
@@ -409,7 +433,7 @@ st.divider()
 
 # --- GALERÍA ---
 st.subheader("📸 GALERÍA")
-foto = st.file_uploader("Subir aventura", type=["jpg", "png"], key="user_gal")
+foto = st.file_uploader("Subir Experiencia", type=["jpg", "png"], key="user_gal")
 if foto:
     if st.button("PUBLICAR FOTO"):
         st.session_state.db["fotos"].append(process_image(foto.getvalue()))
