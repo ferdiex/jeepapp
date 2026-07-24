@@ -20,3 +20,7 @@ Aplicación diseñada para la gestión y logística de rutas off-road. Optimizad
    ```bash
    git clone https://github.com/TU_USUARIO/ruta-crateres-app.git
    cd ruta-crateres-app
+   
+## 🌐 Demo en Vivo
+Prueba la aplicación directamente en Streamlit Cloud:  
+[🚙 JeepApp en línea](https://ferdiex-jeepapp.streamlit.app)
