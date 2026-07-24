@@ -434,7 +434,7 @@ st.divider()
 # --- QR APP ---
 st.subheader("📲 INVITACIÓN APP")
 # Aquí le pasamos la variable real de la base de datos
-url_app = st.session_state.db.get("qr_app", "https://ruta-crateres-4x4.streamlit.app")
+url_app = st.session_state.db.get("qr_app", "https://jeepapp.streamlit.app/")
 qr_app_img = qrcode.make(url_app) 
 
 buf1 = BytesIO()
