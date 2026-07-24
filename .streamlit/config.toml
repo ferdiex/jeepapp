@@ -1,0 +1,14 @@
+[theme]
+base="dark"
+primaryColor="#ff6600"
+backgroundColor="#000000"
+secondaryBackgroundColor="#111111"
+textColor="#ffffff"
+font="sans serif"
+
+[server]
+headless = true
+
+[client]
+showErrorDetails = true
+toolbarMode = "viewer" # O "developer" para ver todo
