@@ -18,8 +18,8 @@ Aplicación diseñada para la gestión y logística de rutas off-road. Optimizad
 
 1. **Clonar el repositorio:**
    ```bash
-   git clone https://github.com/TU_USUARIO/ruta-crateres-app.git
-   cd ruta-crateres-app
+   git clone https://github.com/ferdiex/jeepapp.git
+   cd jeepapp
    ```
    
 ## 🌐 Demo en Vivo
