@@ -36,12 +36,19 @@ def save_data(data):
     with open(DATA_FILE, "w") as f:
         json.dump(data, f)
 
-def process_image(image_bytes, size=(800, 800)):
+def process_image(image_bytes, size=(1280, 720)): # <--- Subimos a 1280 para que no se vea pixelada
     img = Image.open(BytesIO(image_bytes))
+    
+    # 1. Forzamos conversión a RGB (quita el peso de transparencias PNG)
+    if img.mode != "RGB":
+        img = img.convert("RGB")
+        
+    # 2. Reducimos el tamaño de forma inteligente
     img.thumbnail(size)
-    if img.mode in ("RGBA", "P"): img = img.convert("RGB")
+    
+    # 3. Comprimimos a JPEG (Es mucho más ligero que PNG para fotos)
     buf = BytesIO()
-    img.save(buf, format="JPEG", quality=50)
+    img.save(buf, format="JPEG", quality=50, optimize=True) # Calidad 50% es ideal para fondos
     return base64.b64encode(buf.getvalue()).decode()
 
 # Inicializar
@@ -287,9 +294,10 @@ with st.sidebar:
         st.write("---")
         
         # Gestión de fondo
-        bg = st.file_uploader("Cambiar Imagen de Fondo", type=["jpg", "png"], key="bg_admin")
+        bg = st.file_uploader("Cambiar Imagen de Fondo", type=["jpg", "png", "jpeg"], key="bg_admin")
         if bg:
-            st.session_state.db["fondo_b64"] = process_image(bg.getvalue(), (1280, 720))
+            # Aquí la procesamos ANTES de guardarla en el JSON
+            st.session_state.db["fondo_b64"] = process_image(bg.getvalue())
             save_data(st.session_state.db)
             st.rerun()
             
