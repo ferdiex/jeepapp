@@ -1,4 +1,4 @@
-# 🌋 Organizador de Rutas - App de Travesías
+# 🌋 App de Travesías - Organizador de Rutas 
 
 Aplicación diseñada para la gestión y logística de rutas off-road. Optimizado para expediciones tipo **Suzuki Jimny** y entusiastas del 4x4.
 
