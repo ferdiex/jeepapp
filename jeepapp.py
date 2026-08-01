@@ -24,7 +24,7 @@ def load_data():
         "punto": "Estacionamiento Costo Xalapa",
         "maps_url": "https://maps.app.goo.gl/dHnpQLPMh7CBDEcG9",
         "qr_app": "https://jeepapp.streamlit.app/",
-        "qr_whats": "https://chat.whatsapp.com/",
+        "qr_whats": "",
         "requisitos": "🪢 Eslingas (2)\n🧲 Grilletes 3/4\n📻 Radio Baofeng (159.100 MHz) / Talkabout Ch4",
         "full_black": False,
         "fondo_b64": None,
@@ -36,7 +36,7 @@ def save_data(data):
     with open(DATA_FILE, "w") as f:
         json.dump(data, f)
 
-def process_image(image_bytes, size=(1280, 720)): # <--- Subimos a 1280 para que no se vea pixelada
+def process_image(image_bytes, size=(1280, 720)):
     img = Image.open(BytesIO(image_bytes))
     
     # 1. Forzamos conversión a RGB (quita el peso de transparencias PNG)
@@ -259,6 +259,17 @@ with st.sidebar:
     if st.session_state.get("is_admin"):
         st.subheader("🛠 Configuración Admin")
 
+        # --- LINK DE WHATSAPP ---
+        st.write("---")
+        st.subheader("🔗 Links de Invitación")
+        st.session_state.db["qr_whats"] = st.text_input("Link Grupo WhatsApp", 
+                                                      value=st.session_state.db.get("qr_whats", ""))
+        
+        if st.button("💾 Guardar Link de QR"):
+            save_data(st.session_state.db)
+            st.success("¡Link de WhatsApp actualizado!")
+            st.rerun()
+
         st.write("---") 
 
         st.subheader("🔑 Seguridad y Códigos")
@@ -467,19 +478,23 @@ st.divider()
 st.subheader("📲 INVITACIÓN APP")
 # Aquí le pasamos la variable real de la base de datos
 url_app = st.session_state.db.get("qr_app", "")
-qr_app_img = qrcode.make(url_app) 
-
-buf1 = BytesIO()
-qr_app_img.save(buf1, format="PNG")
-st.image(buf1.getvalue(), width=150)
-
+if url_app: # Solo genera si hay link
+    qr_app_img = qrcode.make(url_app) 
+    buf1 = BytesIO()
+    qr_app_img.save(buf1, format="PNG")
+    st.image(buf1.getvalue(), width=150)
+else:
+    st.info("Link de App no configurado.")
+    
 st.divider()
 # --- QR WHATSAPP ---
 st.subheader("🟢💬 INVITACIÓN GRUPO WHATSAPP")
 # Aquí le pasamos la variable real del link de WhatsApp
 url_ws = st.session_state.db.get("qr_whats", "")
-qr_ws_img = qrcode.make(url_ws)
-
-buf2 = BytesIO()
-qr_ws_img.save(buf2, format="PNG")
-st.image(buf2.getvalue(), width=150)
+if url_ws: # Solo genera si hay link
+    qr_ws_img = qrcode.make(url_ws)
+    buf2 = BytesIO()
+    qr_ws_img.save(buf2, format="PNG")
+    st.image(buf2.getvalue(), width=150)
+else:
+    st.info("Link de WhatsApp no configurado.")
